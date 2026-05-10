@@ -1,0 +1,50 @@
+    // --- Attack & Check helpers ---
+
+    bool isSquareUnderAttack(int r, int c, bool byWhite) const {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                if (board[i][j] && board[i][j]->getColor() == byWhite)
+                    if (board[i][j]->isValidMove(r, c, board))
+                        return true;
+        return false;
+    }
+
+        bool wouldLeaveKingInCheck(int fromRow, int fromCol, int toRow, int toCol) const {
+        // Simulate move on a temporary copy of the board state
+        Piece* tempBoard[8][8];
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                tempBoard[i][j] = board[i][j];
+
+        // Apply the move to tempBoard
+        tempBoard[toRow][toCol]   = tempBoard[fromRow][fromCol];
+        tempBoard[fromRow][fromCol] = nullptr;
+
+        // Temporarily update piece position for attack detection
+        int oldRow = tempBoard[toRow][toCol]->getRow();
+        int oldCol = tempBoard[toRow][toCol]->getCol();
+        tempBoard[toRow][toCol]->setPosition(toRow, toCol);
+
+        bool inCheck = false;
+        bool movingColor = tempBoard[toRow][toCol]->getColor();
+
+        // Find king
+        for (int i = 0; i < 8 && !inCheck; i++) {
+            for (int j = 0; j < 8 && !inCheck; j++) {
+                if (tempBoard[i][j]
+                    && tempBoard[i][j]->getSymbol() == 'K'
+                    && tempBoard[i][j]->getColor() == movingColor) {
+                    // Check if any enemy attacks the king square
+                    for (int ai = 0; ai < 8 && !inCheck; ai++)
+                        for (int aj = 0; aj < 8 && !inCheck; aj++)
+                            if (tempBoard[ai][aj] && tempBoard[ai][aj]->getColor() != movingColor)
+                                if (tempBoard[ai][aj]->isValidMove(i, j, tempBoard))
+                                    inCheck = true;
+                }
+            }
+        }
+
+        // Restore position
+        tempBoard[toRow][toCol]->setPosition(oldRow, oldCol);
+        return inCheck;
+    }
