@@ -1,0 +1,70 @@
+// ==================== BASE CLASS: Piece ====================
+class Piece {
+protected:
+    char symbol;
+    bool isWhite;
+    int row, col;
+    bool hasMoved;
+
+public:
+    Piece(bool white, int r, int c)
+        : isWhite(white), row(r), col(c), hasMoved(false), symbol(' ') {}
+
+    virtual ~Piece() {}
+
+    // Only movement logic — no check detection
+    virtual bool isValidMove(int newRow, int newCol, Piece* const board[8][8]) const = 0;
+    virtual Piece* clone() const = 0;
+
+    char getSymbol()    const { return isWhite ? toupper(symbol) : tolower(symbol); }
+    bool getColor()     const { return isWhite; }
+    int  getRow()       const { return row; }
+    int  getCol()       const { return col; }
+    bool getHasMoved()  const { return hasMoved; }
+
+    void setPosition(int r, int c) { row = r; col = c; }
+    void setHasMoved(bool moved)   { hasMoved = moved; }
+};
+
+
+class Rook : public Piece {
+public:
+    Rook(bool white, int r, int c) : Piece(white, r, c) { symbol = 'R'; }
+    Piece* clone() const override { return new Rook(*this); }
+
+    bool isValidMove(int newRow, int newCol, Piece* const board[8][8]) const override {
+        if (row != newRow && col != newCol) return false;
+        if (!ChessHelpers::isStraightPathClear(row, col, newRow, newCol, board)) return false;
+        return ChessHelpers::canLandOn(newRow, newCol, isWhite, board);
+    }
+};
+
+class Bishop : public Piece {
+public:
+    Bishop(bool white, int r, int c) : Piece(white, r, c) { symbol = 'B'; }
+    Piece* clone() const override { return new Bishop(*this); }
+
+    bool isValidMove(int newRow, int newCol, Piece* const board[8][8]) const override {
+        if (abs(newRow - row) != abs(newCol - col)) return false;
+        if (!ChessHelpers::isDiagonalPathClear(row, col, newRow, newCol, board)) return false;
+        return ChessHelpers::canLandOn(newRow, newCol, isWhite, board);
+    }
+};
+
+class Queen : public Piece {
+public:
+    Queen(bool white, int r, int c) : Piece(white, r, c) { symbol = 'Q'; }
+    Piece* clone() const override { return new Queen(*this); }
+
+    bool isValidMove(int newRow, int newCol, Piece* const board[8][8]) const override {
+        bool straight = (row == newRow || col == newCol);
+        bool diagonal = (abs(newRow - row) == abs(newCol - col));
+
+        if (!straight && !diagonal) return false;
+
+        if (straight && !ChessHelpers::isStraightPathClear(row, col, newRow, newCol, board)) return false;
+        if (diagonal && !ChessHelpers::isDiagonalPathClear(row, col, newRow, newCol, board)) return false;
+
+        return ChessHelpers::canLandOn(newRow, newCol, isWhite, board);
+    }
+};
