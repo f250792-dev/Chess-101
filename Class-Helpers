@@ -1,0 +1,11 @@
+// ==================== HELPER FUNCTIONS ====================
+namespace ChessHelpers {
+    // Check if a path is clear along a rank or file (for Rook/Queen)
+    bool isStraightPathClear(int fromRow, int fromCol, int toRow, int toCol, Piece* const board[8][8]);
+
+    // Check if a path is clear diagonally (for Bishop/Queen)
+    bool isDiagonalPathClear(int fromRow, int fromCol, int toRow, int toCol, Piece* const board[8][8]);
+
+    // Check if destination is empty or has an enemy piece
+    bool canLandOn(int row, int col, bool isWhite, Piece* const board[8][8]);
+}
