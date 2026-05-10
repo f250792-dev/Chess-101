@@ -1,0 +1,53 @@
+    // ==================== CONSTRUCTION ====================
+
+    Board() : whiteTurn(true), enPassantAvailable(false),
+              enPassantTargetRow(-1), enPassantTargetCol(-1) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                board[i][j] = nullptr;
+        setupBoard();
+    }
+
+    Board(const Board& other)
+        : whiteTurn(other.whiteTurn),
+          enPassantAvailable(other.enPassantAvailable),
+          enPassantTargetRow(other.enPassantTargetRow),
+          enPassantTargetCol(other.enPassantTargetCol) {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                board[i][j] = other.board[i][j] ? other.board[i][j]->clone() : nullptr;
+    }
+
+    ~Board() {
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                delete board[i][j];
+    }
+
+        void display() const {
+        const string divider = "  +---+---+---+---+---+---+---+---+";
+        cout << "\n";
+        cout << "      a   b   c   d   e   f   g   h\n";
+        cout << divider << "\n";
+        for (int i = 0; i < 8; i++) {
+            cout << "  " << (8 - i) << " ";
+            for (int j = 0; j < 8; j++) {
+                cout << "| ";
+                if (!board[i][j]) {
+                    bool dark = (i + j) % 2 == 1;
+                    cout << (dark ? '.' : ' ');
+                } else {
+                    cout << board[i][j]->getSymbol();
+                }
+                cout << " ";
+            }
+            cout << "| " << (8 - i) << "\n";
+            cout << divider << "\n";
+        }
+        cout << "      a   b   c   d   e   f   g   h\n\n";
+        cout << "  >> " << (whiteTurn ? "WHITE" : "BLACK") << "'s turn"
+             << "   (WHITE = uppercase, BLACK = lowercase)\n";
+        if (isCurrentPlayerInCheck())
+            cout << "  * CHECK! *\n";
+        cout << "\n";
+    }
