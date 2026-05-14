@@ -1,2 +1,3 @@
 # Chess-101
-It is my OOP Project. A chess game combining C++ Components including classes, polymorphism and composition and aggregation
+It is my OOP Project. A chess game combining C++ Components including classes, polymorphism and composition and aggregation.
+GUI yet to be added. :)
